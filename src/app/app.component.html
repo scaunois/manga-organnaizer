@@ -123,17 +123,16 @@
                   <button class="btn btn-outline-secondary btn-sm" (click)="removeManga(m)" title="Supprimer le manga"><img src="../assets/images/remove.png" width="14px"/></button>
                 </div>
                 <div *ngIf="m.isEditingStatus" class="change-manga-status">
-                  Marquer comme :
                   <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" id="newStatusToRead" name="newStatusOptions" value="to_read" (change)="saveStatus(m, 'to_read')">
+                    <input class="form-check-input" type="radio" id="newStatusToRead" name="newStatusOptions" value="to_read" [checked]="m.status === 'to_read'" (change)="saveStatus(m, 'to_read')">
                     <label class="form-check-label" for="newStatusToRead">À lire</label>
                   </div>
                   <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" id="newStatusInProgress" name="newStatusOptions" value="in_progress" (change)="saveStatus(m, 'in_progress')">
+                    <input class="form-check-input" type="radio" id="newStatusInProgress" name="newStatusOptions" value="in_progress" [checked]="m.status === 'in_progress'" (change)="saveStatus(m, 'in_progress')">
                     <label class="form-check-label" for="newStatusInProgress">En cours</label>
                   </div>
                   <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" id="newStatusFinished" name="newStatusOptions" value="finished" (change)="saveStatus(m, 'finished')">
+                    <input class="form-check-input" type="radio" id="newStatusFinished" name="newStatusOptions" value="finished" [checked]="m.status === 'finished'" (change)="saveStatus(m, 'finished')">
                     <label class="form-check-label" for="newStatusFinished">Terminé</label>
                   </div>
                 </div>
