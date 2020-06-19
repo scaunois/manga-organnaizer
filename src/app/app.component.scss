@@ -1,0 +1,52 @@
+
+.main-container {
+    background-color: #FFFAFE;
+}
+
+.jumbotron {
+    background: url('../assets/images/sakura.jpg') no-repeat center center;
+    background-size: 100% 100%;
+}
+
+.jumbotron h1 {
+    font-size: 3rem;
+}
+
+.jumbotron p.lead {
+    font-size: 1.5rem;
+}
+
+table thead svg {
+    width: 50px;
+    height: 50px;
+    fill: black;
+}
+
+table tbody td input:hover {
+    cursor: url('../assets/images/edit_20x20.png'), context-menu;
+}
+
+table tbody input:hover {
+    cursor: inherit;
+}
+
+a:hover {
+    cursor: pointer;
+}
+
+.change-manga-status .form-check {
+    -ms-transform: scale(0.8); /* IE 9 */
+    -webkit-transform: scale(0.8); /* Chrome, Safari, Opera */
+    transform: scale(0.8);
+}
+
+.change-manga-status .form-check-inline {
+    margin-right: 0;
+}
+
+hr {
+    margin-top: 40px;
+    margin-bottom: 40px;
+    color: darkslategrey;
+    background-color: darkslategrey;
+}

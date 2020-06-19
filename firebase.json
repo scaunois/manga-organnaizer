@@ -1,0 +1,19 @@
+{
+  "hosting": [
+    {
+      "target": "manga-organnaizer-frontend",
+      "public": "dist/manga-organnaizer-frontend",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    }
+  ]
+}

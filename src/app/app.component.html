@@ -1,0 +1,196 @@
+
+<div class="main-container">
+
+  <div class="jumbotron jumbotron-fluid">x
+    <div class="container">
+      <h1>manga-orgAnnaizer</h1>
+      <p class="lead">Mon organiseur de manga</p>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <h2>Mes mangas</h2>
+
+    <div class="row">
+      <div class="col-12">
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" id="all" name="filterOptions" value="all" checked (change)="filterAll()">
+          <label class="form-check-label" for="all">Tous</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" id="to_read" name="filterOptions" value="to_read" (change)="filter('to_read')">
+          <label class="form-check-label" for="to_read">À lire</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" id="in_progress" name="filterOptions" value="in_progress" (change)="filter('in_progress')">
+          <label class="form-check-label" for="in_progress">En cours</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" id="finished" name="filterOptions" value="finished" (change)="filter('finished')">
+          <label class="form-check-label" for="finished">Terminés</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <table class="table table-bordered table-sm">
+          <thead class="thead-light">
+
+            <tr>
+              <th><a (click)="sortByTitle()">Titre <svg viewBox="0 0 1100 500"><path d="M194 338l-48 48a96 96 0 00-23 35V43H91v377c-4-13-12-25-22-35l-48-48-21 22 107 107 108-107-21-21zM363 5L256 112l21 21 50-50c9-9 16-20 20-32v376h32V51c4 12 11 23 20 32l50 50 22-21L363 5z"/></svg></a></th>
+              <th><a (click)="sortByPriority()">Priorité <svg viewBox="0 0 1100 500"><path d="M194 338l-48 48a96 96 0 00-23 35V43H91v377c-4-13-12-25-22-35l-48-48-21 22 107 107 108-107-21-21zM363 5L256 112l21 21 50-50c9-9 16-20 20-32v376h32V51c4 12 11 23 20 32l50 50 22-21L363 5z"/></svg></a></th>
+              <th class="align-middle">Dernier chapitre lu</th>
+              <th class="align-middle">Chapitres publiés</th>
+              <th class="align-middle">Actions</th>
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            <tr *ngFor="let m of mangas" class="m-0">
+
+              <td>
+                <input #titleInput name="title"
+                [readonly]="!m.isEditing"
+                class="d-inline mr-2"
+                [ngClass]="{ 'col-12': !m.isEditing || titleInput.ownerDocument.activeElement !== titleInput, 'col-9': m.isEditing && titleInput.ownerDocument.activeElement === titleInput, 'form-control-plaintext': !m.isEditing || titleInput.ownerDocument.activeElement !== titleInput, 'form-control': m.isEditing && titleInput.ownerDocument.activeElement === titleInput }"
+                [value]="m.title"
+                (click)="clickInput(m, titleInput)"
+                (keydown)="onKeyPressed(m, $event, titleInput)"/>
+                <button *ngIf="m.isEditing && titleInput.ownerDocument.activeElement === titleInput" class="btn btn-outline-danger btn-sm mr-2" (click)="m.isEditing = false;" title="Annuler">
+                  <img src="../assets/images/cancel.png" width="8px">
+                </button>
+                <button *ngIf="m.isEditing && titleInput.ownerDocument.activeElement === titleInput" class="btn btn-outline-success btn-sm" (click)="saveTitle(m, titleInput)" title="Enregistrer la modification">
+                  <img src="../assets/images/validate.png" width="14px">
+                </button>
+              </td>
+              
+              <td>
+                <input #priorityInput name="priority"
+                [readonly]="!m.isEditing"
+                class="d-inline mr-2"
+                [ngClass]="{ 'col-12': !m.isEditing || priorityInput.ownerDocument.activeElement !== priorityInput, 'col-7': m.isEditing && priorityInput.ownerDocument.activeElement === priorityInput, 'form-control-plaintext': !m.isEditing || priorityInput.ownerDocument.activeElement !== priorityInput, 'form-control': m.isEditing && priorityInput.ownerDocument.activeElement === priorityInput }"
+                [value]="m.priority"
+                (click)="clickInput(m, priorityInput)"
+                (keydown)="onKeyPressed(m, $event, priorityInput)"/>
+                <button *ngIf="m.isEditing && priorityInput.ownerDocument.activeElement === priorityInput" class="btn btn-outline-danger btn-sm mr-2" (click)="m.isEditing = false;" title="Annuler">
+                  <img src="../assets/images/cancel.png" width="8px">
+                </button>
+                <button *ngIf="m.isEditing && priorityInput.ownerDocument.activeElement === priorityInput" class="btn btn-outline-success btn-sm" (click)="savePriority(m, priorityInput)" title="Enregistrer la modification">
+                  <img src="../assets/images/validate.png" width="14px">
+                </button>
+              </td>
+              
+              <td>
+                <input #lastChapterReadInput name="lastChapterReadInput"
+                [readonly]="!m.isEditing || lastChapterReadInput.ownerDocument.activeElement !== lastChapterReadInput"
+                class="d-inline mr-2"
+                [ngClass]="{ 'col-12': !m.isEditing || lastChapterReadInput.ownerDocument.activeElement !== lastChapterReadInput, 'col-7': m.isEditing && lastChapterReadInput.ownerDocument.activeElement === lastChapterReadInput, 'form-control-plaintext': !m.isEditing || lastChapterReadInput.ownerDocument.activeElement !== lastChapterReadInput, 'form-control': m.isEditing && lastChapterReadInput.ownerDocument.activeElement === lastChapterReadInput }"
+                [value]="m.lastChapterRead"
+                (click)="clickInput(m, lastChapterReadInput)"
+                (keydown)="onKeyPressed(m, $event, lastChapterReadInput)"/>
+                <button *ngIf="m.isEditing && lastChapterReadInput.ownerDocument.activeElement === lastChapterReadInput" class="btn btn-outline-danger btn-sm mr-2" (click)="m.isEditing = false;" title="Annuler">
+                  <img src="../assets/images/cancel.png" width="8px">
+                </button>
+                <button *ngIf="m.isEditing && lastChapterReadInput.ownerDocument.activeElement === lastChapterReadInput" class="btn btn-outline-success btn-sm" (click)="saveLastChapterRead(m, lastChapterReadInput)" title="Enregistrer la modification">
+                  <img src="../assets/images/validate.png" width="14px">
+                </button>
+              </td>
+              
+              <td>
+                <input #releasedChaptersInput name="releasedChaptersInput"
+                [readonly]="!m.isEditing || releasedChaptersInput.ownerDocument.activeElement !== releasedChaptersInput"
+                class="d-inline mr-2"
+                [ngClass]="{ 'col-12': !m.isEditing || releasedChaptersInput.ownerDocument.activeElement !== releasedChaptersInput, 'col-7': m.isEditing && releasedChaptersInput.ownerDocument.activeElement === releasedChaptersInput, 'form-control-plaintext': !m.isEditing || releasedChaptersInput.ownerDocument.activeElement !== releasedChaptersInput, 'form-control': m.isEditing && releasedChaptersInput.ownerDocument.activeElement === releasedChaptersInput }"
+                [value]="m.releasedChapters"
+                (click)="clickInput(m, releasedChaptersInput)"
+                (keydown)="onKeyPressed(m, $event, releasedChaptersInput)"/>
+                <button *ngIf="m.isEditing && releasedChaptersInput.ownerDocument.activeElement === releasedChaptersInput" class="btn btn-outline-danger btn-sm mr-2" (click)="m.isEditing = false;" title="Annuler">
+                  <img src="../assets/images/cancel.png" width="8px">
+                </button>
+                <button *ngIf="m.isEditing && releasedChaptersInput.ownerDocument.activeElement === releasedChaptersInput" class="btn btn-outline-success btn-sm" (click)="saveReleasedChapters(m, releasedChaptersInput)" title="Enregistrer la modification">
+                  <img src="../assets/images/validate.png" width="14px">
+                </button>
+              </td>
+
+              <td class="align-middle">
+                <div>
+                  <button class="btn btn-outline-secondary btn-sm mr-1" (click)="toggleChangeStatus(m)" title="Modifier le statut"><img src="../assets/images/complete.png" width="14px"/></button>
+                  <button class="btn btn-outline-secondary btn-sm" (click)="removeManga(m)" title="Supprimer le manga"><img src="../assets/images/remove.png" width="14px"/></button>
+                </div>
+                <div *ngIf="m.isEditingStatus" class="change-manga-status">
+                  Marquer comme :
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" id="newStatusToRead" name="newStatusOptions" value="to_read" (change)="saveStatus(m, 'to_read')">
+                    <label class="form-check-label" for="newStatusToRead">À lire</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" id="newStatusInProgress" name="newStatusOptions" value="in_progress" (change)="saveStatus(m, 'in_progress')">
+                    <label class="form-check-label" for="newStatusInProgress">En cours</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" id="newStatusFinished" name="newStatusOptions" value="finished" (change)="saveStatus(m, 'finished')">
+                    <label class="form-check-label" for="newStatusFinished">Terminé</label>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <p class="text-muted">
+          Cliquez sur n'importe quelle cellule du tableau pour modifier une valeur !<br/>
+          Pour valider, appuyez sur 'Entrée' ou cliquez sur le bouton vert ! :)
+        </p>
+      </div>
+    </div>
+
+    <hr>
+
+    <h2>Ajouter un manga</h2>
+
+    <div class="row">
+      <div class="col-6">
+        <form [formGroup]="addMangaForm" (ngSubmit)="onSubmitAddForm()" #f=ngForm>
+          <div class="row">
+            <div class="col-12 form-group">
+              <input type="text" class="form-control" placeholder="Nom du manga (obligatoire)" formControlName="title">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-6 form-group">
+              <input type="number" class="form-control" placeholder="Priorité" formControlName="priority">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-6 form-group">
+              <input type="number" class="form-control" placeholder="Dernier chapitre lu"
+                formControlName="lastChapterRead">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-6 form-group">
+              <input type="number" class="form-control" placeholder="Nombre de chapitres publiés"
+                formControlName="releasedChapters">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-6 form-group">
+              <button type="submit" class="btn btn-primary">Ajouter à ma bibliothèque</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </div>
+
+</div>
