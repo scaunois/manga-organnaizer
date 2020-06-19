@@ -35,24 +35,25 @@
 
     <div class="row">
       <div class="col-12">
+
         <table class="table table-bordered table-sm">
           <thead class="thead-light">
 
-            <tr>
-              <th><a (click)="sortByTitle()">Titre <svg viewBox="0 0 1100 500"><path d="M194 338l-48 48a96 96 0 00-23 35V43H91v377c-4-13-12-25-22-35l-48-48-21 22 107 107 108-107-21-21zM363 5L256 112l21 21 50-50c9-9 16-20 20-32v376h32V51c4 12 11 23 20 32l50 50 22-21L363 5z"/></svg></a></th>
-              <th><a (click)="sortByPriority()">Priorité <svg viewBox="0 0 1100 500"><path d="M194 338l-48 48a96 96 0 00-23 35V43H91v377c-4-13-12-25-22-35l-48-48-21 22 107 107 108-107-21-21zM363 5L256 112l21 21 50-50c9-9 16-20 20-32v376h32V51c4 12 11 23 20 32l50 50 22-21L363 5z"/></svg></a></th>
-              <th class="align-middle">Dernier chapitre lu</th>
-              <th class="align-middle">Chapitres publiés</th>
-              <th class="align-middle">Actions</th>
+            <tr class="d-flex">
+              <th class="col-6"><a (click)="sortByTitle()">Titre <svg viewBox="0 0 1100 500"><path d="M194 338l-48 48a96 96 0 00-23 35V43H91v377c-4-13-12-25-22-35l-48-48-21 22 107 107 108-107-21-21zM363 5L256 112l21 21 50-50c9-9 16-20 20-32v376h32V51c4 12 11 23 20 32l50 50 22-21L363 5z"/></svg></a></th>
+              <th class="col-2"><a (click)="sortByPriority()">Priorité <svg viewBox="0 0 1100 500"><path d="M194 338l-48 48a96 96 0 00-23 35V43H91v377c-4-13-12-25-22-35l-48-48-21 22 107 107 108-107-21-21zM363 5L256 112l21 21 50-50c9-9 16-20 20-32v376h32V51c4 12 11 23 20 32l50 50 22-21L363 5z"/></svg></a></th>
+              <th class="col-1 align-middle">Dernier chapitre lu</th>
+              <th class="col-1 align-middle">Chapitres publiés</th>
+              <th class="col-2 align-middle">Actions</th>
             </tr>
 
           </thead>
 
           <tbody>
 
-            <tr *ngFor="let m of mangas" class="m-0">
+            <tr *ngFor="let m of mangas" class="d-flex">
 
-              <td>
+              <td class="col-6">
                 <input #titleInput name="title"
                 [readonly]="!m.isEditing"
                 class="d-inline mr-2"
@@ -68,7 +69,7 @@
                 </button>
               </td>
               
-              <td>
+              <td class="col-2">
                 <input #priorityInput name="priority"
                 [readonly]="!m.isEditing"
                 class="d-inline mr-2"
@@ -84,8 +85,8 @@
                 </button>
               </td>
               
-              <td>
-                <input #lastChapterReadInput name="lastChapterReadInput"
+              <td class="col-1">
+                <input #lastChapterReadInput name="lastChapterRead"
                 [readonly]="!m.isEditing || lastChapterReadInput.ownerDocument.activeElement !== lastChapterReadInput"
                 class="d-inline mr-2"
                 [ngClass]="{ 'col-12': !m.isEditing || lastChapterReadInput.ownerDocument.activeElement !== lastChapterReadInput, 'col-7': m.isEditing && lastChapterReadInput.ownerDocument.activeElement === lastChapterReadInput, 'form-control-plaintext': !m.isEditing || lastChapterReadInput.ownerDocument.activeElement !== lastChapterReadInput, 'form-control': m.isEditing && lastChapterReadInput.ownerDocument.activeElement === lastChapterReadInput }"
@@ -100,8 +101,8 @@
                 </button>
               </td>
               
-              <td>
-                <input #releasedChaptersInput name="releasedChaptersInput"
+              <td class="col-1">
+                <input #releasedChaptersInput name="releasedChapters"
                 [readonly]="!m.isEditing || releasedChaptersInput.ownerDocument.activeElement !== releasedChaptersInput"
                 class="d-inline mr-2"
                 [ngClass]="{ 'col-12': !m.isEditing || releasedChaptersInput.ownerDocument.activeElement !== releasedChaptersInput, 'col-7': m.isEditing && releasedChaptersInput.ownerDocument.activeElement === releasedChaptersInput, 'form-control-plaintext': !m.isEditing || releasedChaptersInput.ownerDocument.activeElement !== releasedChaptersInput, 'form-control': m.isEditing && releasedChaptersInput.ownerDocument.activeElement === releasedChaptersInput }"
@@ -116,7 +117,7 @@
                 </button>
               </td>
 
-              <td class="align-middle">
+              <td class="col-2 align-middle">
                 <div>
                   <button class="btn btn-outline-secondary btn-sm mr-1" (click)="toggleChangeStatus(m)" title="Modifier le statut"><img src="../assets/images/complete.png" width="14px"/></button>
                   <button class="btn btn-outline-secondary btn-sm" (click)="removeManga(m)" title="Supprimer le manga"><img src="../assets/images/remove.png" width="14px"/></button>

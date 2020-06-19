@@ -2,7 +2,7 @@
   "targets": {
     "manga-organnaizer": {
       "hosting": {
-        "manga-organnaizer-frontend": [
+        "manga-organnaizer": [
           "manga-organnaizer"
         ]
       }

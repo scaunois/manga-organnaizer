@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "manga-organnaizer-frontend": {
+    "manga-organnaizer": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/manga-organnaizer-frontend",
+            "outputPath": "dist/manga-organnaizer",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -63,18 +63,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "manga-organnaizer-frontend:build"
+            "browserTarget": "manga-organnaizer:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "manga-organnaizer-frontend:build:production"
+              "browserTarget": "manga-organnaizer:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "manga-organnaizer-frontend:build"
+            "browserTarget": "manga-organnaizer:build"
           }
         },
         "test": {
@@ -111,11 +111,11 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "manga-organnaizer-frontend:serve"
+            "devServerTarget": "manga-organnaizer:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "manga-organnaizer-frontend:serve:production"
+              "devServerTarget": "manga-organnaizer:serve:production"
             }
           }
         },
@@ -126,5 +126,5 @@
       }
     }
   },
-  "defaultProject": "manga-organnaizer-frontend"
+  "defaultProject": "manga-organnaizer"
 }
