@@ -34,6 +34,10 @@ export class AppComponent implements OnInit {
     });
   }
 
+  countMangas(status: string) {
+    return this.allMangas.filter(manga => manga.status === status).length;
+  }
+
   filterAll() {
     this.mangas = this.allMangas;
   }
