@@ -51,7 +51,7 @@
 
           <tbody>
 
-            <tr *ngFor="let m of mangas" class="d-flex">
+            <tr *ngFor="let m of mangas" class="d-flex" [ngStyle]="{ backgroundColor: m.hot ? '#FFAAC8': 'inherit'}">
 
               <td class="col-6">
                 <input #titleInput name="title"

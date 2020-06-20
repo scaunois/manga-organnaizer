@@ -8,4 +8,5 @@ export interface Manga {
     releasedChapters?: number;
     isEditing?: boolean;
     isEditingStatus?: boolean;
+    hot?: boolean;
 }

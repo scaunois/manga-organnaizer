@@ -78,7 +78,24 @@ export class AppComponent implements OnInit {
     if (event.key === 'Escape' || event.key === 'Esc') {
       manga.isEditing = false;
     } else if (event.key === 'Enter') {
-      this.saveField(manga, inputElement.name, inputElement);
+      switch (inputElement.name) {
+        case 'title': {
+          this.saveTitle(manga, inputElement);
+          break;
+        }
+        case 'priority': {
+          this.savePriority(manga, inputElement);
+          break;
+        }
+        case 'lastChapterRead': {
+          this.saveLastChapterRead(manga, inputElement);
+          break;
+        }
+        case 'releasedChapters': {
+          this.saveReleasedChapters(manga, inputElement);
+          break;
+        }
+      }
     }
   }
 
@@ -92,19 +109,31 @@ export class AppComponent implements OnInit {
 
   saveLastChapterRead(manga: Manga, lastChapterReadInput: HTMLInputElement) {
     this.saveField(manga, 'lastChapterRead', lastChapterReadInput);
+    this.updateHotStatus(manga, +lastChapterReadInput.value, manga.releasedChapters);
   }
 
   saveReleasedChapters(manga: Manga, releasedChaptersInput: HTMLInputElement) {
     this.saveField(manga, 'releasedChapters', releasedChaptersInput);
+    this.updateHotStatus(manga, manga.lastChapterRead, +releasedChaptersInput.value);
   }
 
   private saveField(manga: Manga, fieldToModify: string, inputElement: HTMLInputElement) {
     firebase.database().ref('/mangas/' + manga.id)
       .child(fieldToModify)
       .set(inputElement.value, () => {
-        this.loadMangas();
+        this.loadMangas(manga.status);
       });
     manga.isEditing = false;
+  }
+
+  private updateHotStatus(manga: Manga, lastChapterRead: number, releasedChapters: number) {
+    // updates the 'hot' tag for this manga
+    manga.hot = (manga.status === 'in_progress' && releasedChapters > lastChapterRead);
+    firebase.database().ref('/mangas/' + manga.id)
+      .child('hot')
+      .set(manga.hot, () => {
+        this.loadMangas(manga.status);
+      });
   }
 
   toggleChangeStatus(manga: Manga) {
@@ -146,6 +175,7 @@ export class AppComponent implements OnInit {
             const priority = manga.priority || null;
             const lastChapterRead = manga.lastChapterRead || null;
             const releasedChapters = manga.releasedChapters || null;
+            const hot = manga.hot || false;
             mangas.push({
               id: key,
               title,
@@ -154,7 +184,8 @@ export class AppComponent implements OnInit {
               lastChapterRead,
               releasedChapters,
               isEditing: false,
-              isEditingStatus: false
+              isEditingStatus: false,
+              hot
             });
           }
         }
