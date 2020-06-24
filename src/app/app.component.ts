@@ -1,7 +1,7 @@
 import { Manga } from './shared/manga.model';
 import { environment } from '../environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import * as firebase from 'firebase/app';
 import 'firebase/database';
@@ -15,8 +15,7 @@ import { map } from 'rxjs/operators';
 export class AppComponent implements OnInit {
   allMangas = [];
   mangas = [];
-  isSortedByTitle = true;
-  isSortedByPriority = false;
+  sorting: { column: string, order: number }; // 1 = asc, -1 = desc
   addMangaForm: FormGroup;
 
   constructor(private http: HttpClient) {
@@ -24,6 +23,8 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.sorting = { column: 'title', order: 1 }; // default sorting is by ascending title
+
     this.loadMangas();
 
     this.addMangaForm = new FormGroup({
@@ -38,6 +39,10 @@ export class AppComponent implements OnInit {
     return this.allMangas.filter(manga => manga.status === status).length;
   }
 
+  countHotMangas() {
+    return this.allMangas.filter(manga => manga.hot === true).length;
+  }
+
   filterAll() {
     this.mangas = this.allMangas;
   }
@@ -46,31 +51,15 @@ export class AppComponent implements OnInit {
     this.mangas = this.allMangas.filter(manga => manga.status === status);
   }
 
-  sortByTitle() {
-    if (this.isSortedByTitle) {
-      this.mangas.reverse();
+  toggleSorting(column: string) {
+    if (column === this.sorting.column) {
+      // keep the current column and reverse the current order
+      this.sorting.order = this.sorting.order * -1;
     } else {
-      this.mangas.sort((a, b) => {
-        if (a.title <= b.title) {
-          return -1;
-        }
-        if (a.title > b.title) {
-          return 1;
-        }
-      });
-      this.isSortedByTitle = true;
-      this.isSortedByPriority = false;
+      // change the sorting column and keep the current order
+      this.sorting.column = column;
     }
-  }
-
-  sortByPriority() {
-    if (this.isSortedByPriority) {
-      this.mangas.reverse();
-    } else {
-      this.mangas.sort((a, b) => a.priority - b.priority);
-      this.isSortedByPriority = true;
-      this.isSortedByTitle = false;
-    }
+    this.applySorting();
   }
 
   clickInput(manga: Manga, inputElement: HTMLInputElement) {
@@ -153,6 +142,19 @@ export class AppComponent implements OnInit {
     manga.isEditingStatus = false;
   }
 
+  backgroundPublicationStoppedButton(manga: Manga) {
+    return manga.isPublicationStopped ? { backgroundColor: '#8000F0', color: 'white' } : { backgroundColor: 'inherit', color: 'black' };
+  }
+
+  updatePublicationStopped(manga: Manga) {
+    manga.isPublicationStopped = !manga.isPublicationStopped;
+    firebase.database().ref('/mangas/' + manga.id)
+      .child('isPublicationStopped')
+      .set(manga.isPublicationStopped, () => {
+        this.loadMangas(manga.status);
+      });
+  }
+
   removeManga(manga: Manga) {
     const deletionConfirmed = confirm(`Êtes-vous sûr.e de vouloir supprimer le manga '${manga.title}' ?`);
     if (deletionConfirmed) {
@@ -180,6 +182,7 @@ export class AppComponent implements OnInit {
             const lastChapterRead = manga.lastChapterRead || null;
             const releasedChapters = manga.releasedChapters || null;
             const hot = manga.hot || false;
+            const isPublicationStopped = manga.isPublicationStopped || false;
             mangas.push({
               id: key,
               title,
@@ -189,18 +192,11 @@ export class AppComponent implements OnInit {
               releasedChapters,
               isEditing: false,
               isEditingStatus: false,
-              hot
+              hot,
+              isPublicationStopped
             });
           }
         }
-        mangas.sort((a, b) => {
-          if (a.title <= b.title) {
-            return -1;
-          }
-          if (a.title > b.title) {
-            return 1;
-          }
-        });
         return mangas;
       }))
       .subscribe(mangas => {
@@ -209,7 +205,29 @@ export class AppComponent implements OnInit {
         if (statusFilter) {
           this.filter(statusFilter);
         }
+        this.applySorting();
       });
+  }
+
+  private applySorting() {
+    switch (this.sorting.column) {
+      case 'title': {
+        this.mangas.sort((m1, m2) => m1.title.localeCompare(m2.title) * this.sorting.order);
+        break;
+      }
+      case 'priority': {
+        this.mangas.sort((m1, m2) => (m1.priority - m2.priority) * this.sorting.order);
+        break;
+      }
+      case 'releasedChapters': {
+        this.mangas.sort((m1, m2) => (m1.releasedChapters - m2.releasedChapters) * this.sorting.order);
+        break;
+      }
+      default: {
+        this.mangas.sort((m1, m2) => m1.title.localeCompare(m2.title) * this.sorting.order);
+        break;
+      }
+    }
   }
 
   private addNewManga(manga: Manga) {
