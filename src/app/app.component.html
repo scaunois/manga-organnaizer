@@ -12,8 +12,8 @@
 
     <h2>Mes mangas</h2>
 
-    <div class="row">
-      <div class="col-12">
+    <div class="row mb-1">
+      <div class="col-6">
         <div class="form-check form-check-inline">
           <input class="form-check-input" type="radio" id="all" name="filterOptions" value="all" checked (change)="filterAll()">
           <label class="form-check-label" for="all">Tous ({{ allMangas.length }})</label>
@@ -30,6 +30,12 @@
           <input class="form-check-input" type="radio" id="finished" name="filterOptions" value="finished" (change)="filter('finished')">
           <label class="form-check-label" for="finished">Terminés({{ countMangas('finished') }})</label>
         </div>
+      </div>
+      <div class="col-6 text-right">
+        <button class="btn btn-sm btn-outline-primary" (click)="exportAllMangas()" title="Exporter la liste complète des mangas">
+          Export CSV
+          <i class="fas fa-download"></i>
+        </button>
       </div>
     </div>
 

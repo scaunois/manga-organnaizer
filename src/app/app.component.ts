@@ -51,6 +51,20 @@ export class AppComponent implements OnInit {
     this.mangas = this.allMangas.filter(manga => manga.status === status);
   }
 
+  exportAllMangas() {
+    const csvContent = 'data:text/csv;charset=utf-8,'
+      + ['Titre', 'Statut', 'Priorité', 'Dernier chapitre lu', 'Chapitres publiés', '\'Hot\'', 'Publication terminée ?\n'].join(';')
+      .concat(this.allMangas
+        .map(m => `${m.title};${m.status};${m.priority};${m.lastChapterRead};${m.releasedChapters};${m.hot};${m.isPublicationStopped}`)
+        .join('\n')
+      );
+    const link = document.createElement('a');
+    link.setAttribute('href', encodeURI(csvContent));
+    link.setAttribute('download', `sauvegarde_complete_mangas.csv`);
+    document.body.appendChild(link);
+    link.click();
+  }
+
   toggleSorting(column: string) {
     if (column === this.sorting.column) {
       // keep the current column and reverse the current order
