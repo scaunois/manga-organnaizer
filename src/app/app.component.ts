@@ -1,7 +1,7 @@
 import { Manga } from './shared/manga.model';
 import { environment } from '../environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import * as firebase from 'firebase/app';
 import 'firebase/database';
@@ -15,15 +15,21 @@ import { map } from 'rxjs/operators';
 export class AppComponent implements OnInit {
   allMangas = [];
   mangas = [];
-  sorting: { column: string, order: number }; // 1 = asc, -1 = desc
+  currentStatusFilter = 'all';
+  sorting: { column: string, order: number }; // order: 1 = asc, -1 = desc
+  displayOnlyHotMangas: boolean;
   addMangaForm: FormGroup;
 
-  constructor(private http: HttpClient) {
+  constructor(
+    private http: HttpClient,
+    private cd: ChangeDetectorRef
+  ) {
     firebase.initializeApp(environment.firebaseConfig);
   }
 
   ngOnInit() {
     this.sorting = { column: 'title', order: 1 }; // default sorting is by ascending title
+    this.displayOnlyHotMangas = false;
 
     this.loadMangas();
 
@@ -43,12 +49,10 @@ export class AppComponent implements OnInit {
     return this.allMangas.filter(manga => manga.hot === true).length;
   }
 
-  filterAll() {
-    this.mangas = this.allMangas;
-  }
-
-  filter(status: string) {
-    this.mangas = this.allMangas.filter(manga => manga.status === status);
+  filter() {
+    this.mangas = this.allMangas
+      .filter((m: Manga) => this.currentStatusFilter === 'all' || m.status === this.currentStatusFilter) // filter by status
+      .filter((m: Manga) => this.displayOnlyHotMangas ? m.hot : true); // filter 'hot' if requested
   }
 
   exportAllMangas() {
@@ -63,6 +67,33 @@ export class AppComponent implements OnInit {
     link.setAttribute('download', `sauvegarde_complete_mangas.csv`);
     document.body.appendChild(link);
     link.click();
+  }
+
+  onFileChange(file: File) {
+    const reader = new FileReader();
+    reader.readAsBinaryString(file);
+    reader.onload = () => {
+      // console.log(reader.result);
+      console.log(reader.result.toString().split('\n').slice(1));
+      const mangasFromCsv = new Array<Manga>();
+      reader.result.toString().split('\n').slice(1).map(str => {
+        const tab = str.split(';');
+        mangasFromCsv.push({
+          title: tab[0],
+          status: tab[1],
+          priority: tab[2] !== 'null' ? +tab[2] : null,
+          lastChapterRead: tab[3] !== 'null' ? +tab[3] : null,
+          releasedChapters: tab[4] !== 'null' ? +tab[4] : null,
+          hot: JSON.parse(tab[5]),
+          isPublicationStopped: JSON.parse(tab[6])
+        });
+      }
+      );
+      console.log(mangasFromCsv);
+      // this.allMangas = mangasFromCsv; // A REMETTRE LE JOUR OU ON VOUDRA L'UTILISER !!!
+      // need to run CD since file load runs outside of zone
+      this.cd.markForCheck();
+    };
   }
 
   toggleSorting(column: string) {
@@ -217,7 +248,7 @@ export class AppComponent implements OnInit {
         this.allMangas = mangas;
         this.mangas = mangas;
         if (statusFilter) {
-          this.filter(statusFilter);
+          this.filter();
         }
         this.applySorting();
       });

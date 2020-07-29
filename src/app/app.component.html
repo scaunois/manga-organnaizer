@@ -10,32 +10,50 @@
 
   <div class="container">
 
-    <h2>Mes mangas</h2>
+    <h2 class="mb-4">Mes mangas</h2>
 
-    <div class="row mb-1">
+    <div class="row mb-2">
+
       <div class="col-6">
-        <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" id="all" name="filterOptions" value="all" checked (change)="filterAll()">
-          <label class="form-check-label" for="all">Tous ({{ allMangas.length }})</label>
+        <div class="row mb-1">
+          <div class="col-12">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" id="all" name="filterOptions" value="all" checked [(ngModel)]="currentStatusFilter" (change)="filter()">
+              <label class="form-check-label" for="all">Tous ({{ allMangas.length }})</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" id="to_read" name="filterOptions" value="to_read" [(ngModel)]="currentStatusFilter" (change)="filter()">
+              <label class="form-check-label" for="to_read">À lire ({{ countMangas('to_read') }})</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" id="in_progress" name="filterOptions" value="in_progress" [(ngModel)]="currentStatusFilter" (change)="filter()">
+              <label class="form-check-label" for="in_progress">En cours({{ countMangas('in_progress') }}) <span [ngStyle]="{ color: '#FFAAC8' }">({{ countHotMangas() }})</span></label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" id="finished" name="filterOptions" value="finished" [(ngModel)]="currentStatusFilter" (change)="filter()">
+              <label class="form-check-label" for="finished">Terminés({{ countMangas('finished') }})</label>
+            </div>
+          </div>
         </div>
-        <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" id="to_read" name="filterOptions" value="to_read" (change)="filter('to_read')">
-          <label class="form-check-label" for="to_read">À lire ({{ countMangas('to_read') }})</label>
-        </div>
-        <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" id="in_progress" name="filterOptions" value="in_progress" (change)="filter('in_progress')">
-          <label class="form-check-label" for="in_progress">En cours({{ countMangas('in_progress') }}) <span [ngStyle]="{ color: '#FFAAC8' }">({{ countHotMangas() }})</span></label>
-        </div>
-        <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" id="finished" name="filterOptions" value="finished" (change)="filter('finished')">
-          <label class="form-check-label" for="finished">Terminés({{ countMangas('finished') }})</label>
+        <div class="row">
+          <div class="col-12">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" id="displayOnlyHotMangas" name="displayOnlyHotMangas" (change)="displayOnlyHotMangas = !displayOnlyHotMangas; filter()">
+              <label class="form-check-label" for="all">Afficher uniquement les 'hot'</label>
+            </div>
+          </div>
         </div>
       </div>
+
       <div class="col-6 text-right">
-        <button class="btn btn-sm btn-outline-primary" (click)="exportAllMangas()" title="Exporter la liste complète des mangas">
-          Export CSV
+        <button class="btn btn-sm btn-outline-primary mr-1" (click)="exportAllMangas()" title="Exporter la liste complète des mangas">
+          Exporter CSV
           <i class="fas fa-download"></i>
         </button>
+        <span>
+          <label for="importCsv" class="btn btn-sm btn-outline-secondary mb-0">Importer CSV <i class="fas fa-upload"></i></label>
+          <input type="file" id="importCsv" style="display: none" title="Restaurer une sauvegarde plus ancienne de la liste des mangas" (change)="onFileChange($event.target.files[0])" />
+        </span>
       </div>
     </div>
 
